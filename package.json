@@ -1,0 +1,17 @@
+{
+  "name": "uicomp",
+  "version": "1.0.0",
+  "description": "UI-components library",
+  "main": "index.js",
+  "scripts": {
+    "start": "gulp",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Aleksandr Kalinin [https://github.com/lawejr]",
+  "license": "ISC",
+  "devDependencies": {
+    "browser-sync": "^2.18.8",
+    "gulp": "^3.9.1",
+    "gulp-cli": "^1.2.2"
+  }
+}
