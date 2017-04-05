@@ -19,18 +19,20 @@ module.exports = (function () {
   }
 
   function _toggleModal () {
-    let scrollWidth = _getScrollWidth()
-
-    body.classList.toggle('uc-no-scroll')
-    this.classList.toggle('uc-modal--visible')
-
     let overflowScroll = document.body.clientWidth < window.innerWidth
 
-    if (scrollWidth && activeModal) {
-      body.style.paddingRight = `${scrollWidth}px`
+    if (overflowScroll) {
+      let scrollWidth = _getScrollWidth()
+
+      if (scrollWidth && activeModal) {
+        body.style.paddingRight = `${scrollWidth}px`
+      }
     } else {
       body.style.paddingRight = '0px'
     }
+
+    body.classList.toggle('uc-no-scroll')
+    this.classList.toggle('uc-modal--visible')
   }
 
   function _close () {
