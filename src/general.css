@@ -15,6 +15,7 @@ body {
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  height: 200vh;
 }
 
 .content-box-component {
@@ -66,4 +67,8 @@ button {
 
 .clearfix::after {
   clear: both;
+}
+
+.uc-no-scroll {
+  overflow: hidden;
 }

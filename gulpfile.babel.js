@@ -9,8 +9,11 @@ import plumber from 'gulp-plumber'
 import gulpSequence from 'gulp-sequence'
 import gulpif from 'gulp-if'
 import { create as browserSyncCreate } from 'browser-sync'
-import browserify from 'gulp-browserify'
 import del from 'del'
+import sourceMap from 'gulp-sourcemaps'
+
+import browserify from 'gulp-browserify'
+import csso from 'gulp-csso'
 
 const browserSync = browserSyncCreate()
 const isDevelopment = !process.env.NODE_ENV || process.env.NODE_ENV == 'dev'
@@ -34,9 +37,14 @@ gulp.task('style', function () {
   .pipe(gulpif(isDevelopment, plumber()))
   .pipe(stylelint({
     reporters: [
-      {formatter: 'string', console: true}
+      { formatter: 'string', console: true }
     ]
   }))
+  .pipe(sourceMap.init())
+  .pipe(csso({
+    restructure: !isDevelopment
+  }))
+  .pipe(sourceMap.write('./'))
   .pipe(gulp.dest(config.paths.build))
   .pipe(gulpif(isDevelopment, browserSync.stream()))
 })
@@ -49,6 +57,7 @@ gulp.task('js', function () {
   .pipe(gulpif(isDevelopment, eslint.format()))
   .pipe(browserify({
     insertGlobals: true,
+    debug: isDevelopment,
     transform: ['babelify']
   }))
   .pipe(gulp.dest(config.paths.build))

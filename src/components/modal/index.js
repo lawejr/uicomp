@@ -6,22 +6,38 @@ module.exports = (function () {
   const overlays = findAll('.uc-modal')
   const openTriggers = findAll('[data-toggle = uc-modal]')
   const closeTriggers = findAll('[data-dismiss = uc-modal]')
+  const showEvent = new CustomEvent('ucModal.show')
+  const hideEvent = new CustomEvent('ucModal.hide')
   let activeModal = null
 
-  function _open (e) {
-    e.preventDefault()
-
+  function _open () {
     const targetId = this.dataset.target
     const target = findId(targetId)
 
-    body.classList.add('uc-no-scroll')
-    target.classList.add('uc-modal--visible')
     activeModal = target
+    target.dispatchEvent(showEvent)
+  }
+
+  function _toggleModal () {
+    let scrollWidth = _getScrollWidth()
+
+    body.classList.toggle('uc-no-scroll')
+    this.classList.toggle('uc-modal--visible')
+
+    let overflowScroll = document.body.clientWidth < window.innerWidth
+
+    if (scrollWidth && activeModal) {
+      body.style.paddingRight = `${scrollWidth}px`
+    } else {
+      body.style.paddingRight = '0px'
+    }
   }
 
   function _close () {
-    body.classList.remove('uc-no-scroll')
-    activeModal.classList.remove('uc-modal--visible')
+    const target = this.closest('.uc-modal')
+
+    activeModal = null
+    target.dispatchEvent(hideEvent)
   }
 
   function _overlayOnClick (e) {
@@ -31,8 +47,32 @@ module.exports = (function () {
     if (!isContent) {
       e.preventDefault()
 
-      _close()
+      target.dispatchEvent(hideEvent)
     }
+  }
+
+  function _onKeyup (e) {
+    const isEscape = (e.keyCode === 27 || e.which === 27)
+
+    if (isEscape || activeModal) {
+      activeModal.dispatchEvent(hideEvent)
+    }
+  }
+
+  function _getScrollWidth () {
+    let div = document.createElement('div')
+    let scrollWidth = 0
+
+    div.style.overflowY = 'scroll'
+    div.style.width = '50px'
+    div.style.height = '50px'
+    div.style.visibility = 'hidden'
+
+    body.appendChild(div)
+    scrollWidth = div.offsetWidth - div.clientWidth
+    body.removeChild(div)
+
+    return scrollWidth
   }
 
   function init () {
@@ -43,10 +83,13 @@ module.exports = (function () {
     for (let i = closeTriggers.length; i--;) {
       closeTriggers[i].addEventListener('click', _close)
     }
-
     for (let i = overlays.length; i--;) {
+      overlays[i].addEventListener('ucModal.show', _toggleModal)
+      overlays[i].addEventListener('ucModal.hide', _toggleModal)
       overlays[i].addEventListener('click', _overlayOnClick)
     }
+
+    document.addEventListener('keyup', _onKeyup)
   }
 
   return {
