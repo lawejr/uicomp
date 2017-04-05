@@ -1396,59 +1396,63 @@ process.chdir = function (dir) {
 }).call(this,require("FT5ORs"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../../../node_modules/process/browser.js","/../../../node_modules/process")
 },{"FT5ORs":4,"buffer":2}],5:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
-module.exports = (function () {
-  var $ = document.querySelectorAll.bind(document)
-  var body = document.body
-  var overlays = $('.uc-modal')
-  var openTriggers = $('[data-toggle = uc-modal]')
-  var closeTriggers = $('[data-dismiss = uc-modal]')
-  var activeModal = null
+'use strict';
 
-  function _open (e) {
-    e.preventDefault()
+module.exports = function () {
+  var findAll = document.querySelectorAll.bind(document);
+  var findId = document.getElementById.bind(document);
 
-    var targetId = this.dataset.target
-    var target = $(targetId)
+  var body = document.body;
+  var overlays = findAll('.uc-modal');
+  var openTriggers = findAll('[data-toggle = uc-modal]');
+  var closeTriggers = findAll('[data-dismiss = uc-modal]');
+  var activeModal = null;
 
-    body.classList.add('uc-no-scroll')
-    target[0].classList.add('uc-modal--visible')
-    activeModal = target[0]
+  function _open(e) {
+    e.preventDefault();
+
+    var targetId = this.dataset.target;
+    var target = findId(targetId);
+
+    body.classList.add('uc-no-scroll');
+    target.classList.add('uc-modal--visible');
+    activeModal = target;
   }
 
-  function _close () {
-    body.classList.remove('uc-no-scroll')
-    activeModal.classList.remove('uc-modal--visible')
+  function _close() {
+    body.classList.remove('uc-no-scroll');
+    activeModal.classList.remove('uc-modal--visible');
   }
 
-  function _overlayOnClick (e) {
-    var target = e.target
-    var isContent = target.closest('.uc-modal__content')
+  function _overlayOnClick(e) {
+    var target = e.target;
+    var isContent = target.closest('.uc-modal__content');
 
     if (!isContent) {
-      e.preventDefault()
+      e.preventDefault();
 
-      _close()
+      _close();
     }
   }
 
-  function init () {
-    for (let i = openTriggers.length; i--;) {
-      openTriggers[i].addEventListener('click', _open)
+  function init() {
+    for (var i = openTriggers.length; i--;) {
+      openTriggers[i].addEventListener('click', _open);
     }
 
-    for (let i = closeTriggers.length; i--;) {
-      closeTriggers[i].addEventListener('click', _close)
+    for (var _i = closeTriggers.length; _i--;) {
+      closeTriggers[_i].addEventListener('click', _close);
     }
 
-    for (let i = overlays.length; i--;) {
-      overlays[i].addEventListener('click', _overlayOnClick)
+    for (var _i2 = overlays.length; _i2--;) {
+      overlays[_i2].addEventListener('click', _overlayOnClick);
     }
   }
 
   return {
     init: init
-  }
-})()
-
-}).call(this,require("FT5ORs"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_dcc66453.js","/")
+  };
+}();
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImZha2VfMTY0YTFjMTEuanMiXSwibmFtZXMiOlsibW9kdWxlIiwiZXhwb3J0cyIsImZpbmRBbGwiLCJkb2N1bWVudCIsInF1ZXJ5U2VsZWN0b3JBbGwiLCJiaW5kIiwiZmluZElkIiwiZ2V0RWxlbWVudEJ5SWQiLCJib2R5Iiwib3ZlcmxheXMiLCJvcGVuVHJpZ2dlcnMiLCJjbG9zZVRyaWdnZXJzIiwiYWN0aXZlTW9kYWwiLCJfb3BlbiIsImUiLCJwcmV2ZW50RGVmYXVsdCIsInRhcmdldElkIiwiZGF0YXNldCIsInRhcmdldCIsImNsYXNzTGlzdCIsImFkZCIsIl9jbG9zZSIsInJlbW92ZSIsIl9vdmVybGF5T25DbGljayIsImlzQ29udGVudCIsImNsb3Nlc3QiLCJpbml0IiwiaSIsImxlbmd0aCIsImFkZEV2ZW50TGlzdGVuZXIiXSwibWFwcGluZ3MiOiI7O0FBQUFBLE9BQU9DLE9BQVAsR0FBa0IsWUFBWTtBQUM1QixNQUFNQyxVQUFVQyxTQUFTQyxnQkFBVCxDQUEwQkMsSUFBMUIsQ0FBK0JGLFFBQS9CLENBQWhCO0FBQ0EsTUFBTUcsU0FBU0gsU0FBU0ksY0FBVCxDQUF3QkYsSUFBeEIsQ0FBNkJGLFFBQTdCLENBQWY7O0FBRUEsTUFBTUssT0FBT0wsU0FBU0ssSUFBdEI7QUFDQSxNQUFNQyxXQUFXUCxRQUFRLFdBQVIsQ0FBakI7QUFDQSxNQUFNUSxlQUFlUixRQUFRLDBCQUFSLENBQXJCO0FBQ0EsTUFBTVMsZ0JBQWdCVCxRQUFRLDJCQUFSLENBQXRCO0FBQ0EsTUFBSVUsY0FBYyxJQUFsQjs7QUFFQSxXQUFTQyxLQUFULENBQWdCQyxDQUFoQixFQUFtQjtBQUNqQkEsTUFBRUMsY0FBRjs7QUFFQSxRQUFNQyxXQUFXLEtBQUtDLE9BQUwsQ0FBYUMsTUFBOUI7QUFDQSxRQUFNQSxTQUFTWixPQUFPVSxRQUFQLENBQWY7O0FBRUFSLFNBQUtXLFNBQUwsQ0FBZUMsR0FBZixDQUFtQixjQUFuQjtBQUNBRixXQUFPQyxTQUFQLENBQWlCQyxHQUFqQixDQUFxQixtQkFBckI7QUFDQVIsa0JBQWNNLE1BQWQ7QUFDRDs7QUFFRCxXQUFTRyxNQUFULEdBQW1CO0FBQ2pCYixTQUFLVyxTQUFMLENBQWVHLE1BQWYsQ0FBc0IsY0FBdEI7QUFDQVYsZ0JBQVlPLFNBQVosQ0FBc0JHLE1BQXRCLENBQTZCLG1CQUE3QjtBQUNEOztBQUVELFdBQVNDLGVBQVQsQ0FBMEJULENBQTFCLEVBQTZCO0FBQzNCLFFBQU1JLFNBQVNKLEVBQUVJLE1BQWpCO0FBQ0EsUUFBTU0sWUFBWU4sT0FBT08sT0FBUCxDQUFlLG9CQUFmLENBQWxCOztBQUVBLFFBQUksQ0FBQ0QsU0FBTCxFQUFnQjtBQUNkVixRQUFFQyxjQUFGOztBQUVBTTtBQUNEO0FBQ0Y7O0FBRUQsV0FBU0ssSUFBVCxHQUFpQjtBQUNmLFNBQUssSUFBSUMsSUFBSWpCLGFBQWFrQixNQUExQixFQUFrQ0QsR0FBbEMsR0FBd0M7QUFDdENqQixtQkFBYWlCLENBQWIsRUFBZ0JFLGdCQUFoQixDQUFpQyxPQUFqQyxFQUEwQ2hCLEtBQTFDO0FBQ0Q7O0FBRUQsU0FBSyxJQUFJYyxLQUFJaEIsY0FBY2lCLE1BQTNCLEVBQW1DRCxJQUFuQyxHQUF5QztBQUN2Q2hCLG9CQUFjZ0IsRUFBZCxFQUFpQkUsZ0JBQWpCLENBQWtDLE9BQWxDLEVBQTJDUixNQUEzQztBQUNEOztBQUVELFNBQUssSUFBSU0sTUFBSWxCLFNBQVNtQixNQUF0QixFQUE4QkQsS0FBOUIsR0FBb0M7QUFDbENsQixlQUFTa0IsR0FBVCxFQUFZRSxnQkFBWixDQUE2QixPQUE3QixFQUFzQ04sZUFBdEM7QUFDRDtBQUNGOztBQUVELFNBQU87QUFDTEcsVUFBTUE7QUFERCxHQUFQO0FBR0QsQ0F0RGdCLEVBQWpCIiwiZmlsZSI6ImZha2VfMTY0YTFjMTEuanMiLCJzb3VyY2VzQ29udGVudCI6WyJtb2R1bGUuZXhwb3J0cyA9IChmdW5jdGlvbiAoKSB7XG4gIGNvbnN0IGZpbmRBbGwgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsLmJpbmQoZG9jdW1lbnQpXG4gIGNvbnN0IGZpbmRJZCA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkLmJpbmQoZG9jdW1lbnQpXG5cbiAgY29uc3QgYm9keSA9IGRvY3VtZW50LmJvZHlcbiAgY29uc3Qgb3ZlcmxheXMgPSBmaW5kQWxsKCcudWMtbW9kYWwnKVxuICBjb25zdCBvcGVuVHJpZ2dlcnMgPSBmaW5kQWxsKCdbZGF0YS10b2dnbGUgPSB1Yy1tb2RhbF0nKVxuICBjb25zdCBjbG9zZVRyaWdnZXJzID0gZmluZEFsbCgnW2RhdGEtZGlzbWlzcyA9IHVjLW1vZGFsXScpXG4gIGxldCBhY3RpdmVNb2RhbCA9IG51bGxcblxuICBmdW5jdGlvbiBfb3BlbiAoZSkge1xuICAgIGUucHJldmVudERlZmF1bHQoKVxuXG4gICAgY29uc3QgdGFyZ2V0SWQgPSB0aGlzLmRhdGFzZXQudGFyZ2V0XG4gICAgY29uc3QgdGFyZ2V0ID0gZmluZElkKHRhcmdldElkKVxuXG4gICAgYm9keS5jbGFzc0xpc3QuYWRkKCd1Yy1uby1zY3JvbGwnKVxuICAgIHRhcmdldC5jbGFzc0xpc3QuYWRkKCd1Yy1tb2RhbC0tdmlzaWJsZScpXG4gICAgYWN0aXZlTW9kYWwgPSB0YXJnZXRcbiAgfVxuXG4gIGZ1bmN0aW9uIF9jbG9zZSAoKSB7XG4gICAgYm9keS5jbGFzc0xpc3QucmVtb3ZlKCd1Yy1uby1zY3JvbGwnKVxuICAgIGFjdGl2ZU1vZGFsLmNsYXNzTGlzdC5yZW1vdmUoJ3VjLW1vZGFsLS12aXNpYmxlJylcbiAgfVxuXG4gIGZ1bmN0aW9uIF9vdmVybGF5T25DbGljayAoZSkge1xuICAgIGNvbnN0IHRhcmdldCA9IGUudGFyZ2V0XG4gICAgY29uc3QgaXNDb250ZW50ID0gdGFyZ2V0LmNsb3Nlc3QoJy51Yy1tb2RhbF9fY29udGVudCcpXG5cbiAgICBpZiAoIWlzQ29udGVudCkge1xuICAgICAgZS5wcmV2ZW50RGVmYXVsdCgpXG5cbiAgICAgIF9jbG9zZSgpXG4gICAgfVxuICB9XG5cbiAgZnVuY3Rpb24gaW5pdCAoKSB7XG4gICAgZm9yIChsZXQgaSA9IG9wZW5UcmlnZ2Vycy5sZW5ndGg7IGktLTspIHtcbiAgICAgIG9wZW5UcmlnZ2Vyc1tpXS5hZGRFdmVudExpc3RlbmVyKCdjbGljaycsIF9vcGVuKVxuICAgIH1cblxuICAgIGZvciAobGV0IGkgPSBjbG9zZVRyaWdnZXJzLmxlbmd0aDsgaS0tOykge1xuICAgICAgY2xvc2VUcmlnZ2Vyc1tpXS5hZGRFdmVudExpc3RlbmVyKCdjbGljaycsIF9jbG9zZSlcbiAgICB9XG5cbiAgICBmb3IgKGxldCBpID0gb3ZlcmxheXMubGVuZ3RoOyBpLS07KSB7XG4gICAgICBvdmVybGF5c1tpXS5hZGRFdmVudExpc3RlbmVyKCdjbGljaycsIF9vdmVybGF5T25DbGljaylcbiAgICB9XG4gIH1cblxuICByZXR1cm4ge1xuICAgIGluaXQ6IGluaXRcbiAgfVxufSkoKVxuIl19
+}).call(this,require("FT5ORs"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_164a1c11.js","/")
 },{"FT5ORs":4,"buffer":2}]},{},[5])

@@ -1,20 +1,22 @@
 module.exports = (function () {
-  var $ = document.querySelectorAll.bind(document)
-  var body = document.body
-  var overlays = $('.uc-modal')
-  var openTriggers = $('[data-toggle = uc-modal]')
-  var closeTriggers = $('[data-dismiss = uc-modal]')
-  var activeModal = null
+  const findAll = document.querySelectorAll.bind(document)
+  const findId = document.getElementById.bind(document)
+
+  const body = document.body
+  const overlays = findAll('.uc-modal')
+  const openTriggers = findAll('[data-toggle = uc-modal]')
+  const closeTriggers = findAll('[data-dismiss = uc-modal]')
+  let activeModal = null
 
   function _open (e) {
     e.preventDefault()
 
-    var targetId = this.dataset.target
-    var target = $(targetId)
+    const targetId = this.dataset.target
+    const target = findId(targetId)
 
     body.classList.add('uc-no-scroll')
-    target[0].classList.add('uc-modal--visible')
-    activeModal = target[0]
+    target.classList.add('uc-modal--visible')
+    activeModal = target
   }
 
   function _close () {
@@ -23,8 +25,8 @@ module.exports = (function () {
   }
 
   function _overlayOnClick (e) {
-    var target = e.target
-    var isContent = target.closest('.uc-modal__content')
+    const target = e.target
+    const isContent = target.closest('.uc-modal__content')
 
     if (!isContent) {
       e.preventDefault()

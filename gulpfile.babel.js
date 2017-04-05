@@ -48,7 +48,8 @@ gulp.task('js', function () {
   .pipe(gulpif(isDevelopment, eslint()))
   .pipe(gulpif(isDevelopment, eslint.format()))
   .pipe(browserify({
-    insertGlobals: true
+    insertGlobals: true,
+    transform: ['babelify']
   }))
   .pipe(gulp.dest(config.paths.build))
 })
