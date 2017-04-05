@@ -4,7 +4,8 @@
   box-sizing: inherit;
 }
 
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
 }
@@ -63,9 +64,6 @@ button {
   display: table;
 }
 
-clearfix::after {
+.clearfix::after {
   clear: both;
 }
-
-
-

@@ -1401,10 +1401,10 @@ var ucModal = require('./index')
 
 ucModal.init()
 
-}).call(this,require("FT5ORs"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_268d78b3.js","/")
+}).call(this,require("FT5ORs"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_eb562932.js","/")
 },{"./index":6,"FT5ORs":4,"buffer":2}],6:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
-module.exports = function () {
+module.exports = (function () {
   var $ = document.querySelectorAll.bind(document)
   var body = document.body
   var overlays = $('.uc-modal')
@@ -1412,7 +1412,7 @@ module.exports = function () {
   var closeTriggers = $('[data-dismiss = uc-modal]')
   var activeModal = null
 
-  function _open(e) {
+  function _open (e) {
     e.preventDefault()
 
     var targetId = this.dataset.target
@@ -1423,12 +1423,12 @@ module.exports = function () {
     activeModal = target[0]
   }
 
-  function _close() {
+  function _close () {
     body.classList.remove('uc-no-scroll')
     activeModal.classList.remove('uc-modal--visible')
   }
 
-  function _overlayOnClick(e) {
+  function _overlayOnClick (e) {
     var target = e.target
     var isContent = target.closest('.uc-modal__content')
 
@@ -1439,16 +1439,16 @@ module.exports = function () {
     }
   }
 
-  function init() {
-    for (var i = 0; i < openTriggers.length; i++) {
+  function init () {
+    for (let i = openTriggers.length; i--;) {
       openTriggers[i].addEventListener('click', _open)
     }
 
-    for (var i = 0; i < closeTriggers.length; i++) {
+    for (let i = closeTriggers.length; i--;) {
       closeTriggers[i].addEventListener('click', _close)
     }
 
-    for (var i = 0; i < overlays.length; i++) {
+    for (let i = overlays.length; i--;) {
       overlays[i].addEventListener('click', _overlayOnClick)
     }
   }
@@ -1456,7 +1456,7 @@ module.exports = function () {
   return {
     init: init
   }
-}()
+})()
 
 }).call(this,require("FT5ORs"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/index.js","/")
 },{"FT5ORs":4,"buffer":2}]},{},[5])

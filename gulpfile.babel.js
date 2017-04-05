@@ -1,7 +1,11 @@
 'use strict'
 
 import config from './config/gulp'
+import eslint from 'gulp-eslint'
+import stylelint from 'gulp-stylelint'
+
 import gulp from 'gulp'
+import plumber from 'gulp-plumber'
 import gulpSequence from 'gulp-sequence'
 import gulpif from 'gulp-if'
 import { create as browserSyncCreate } from 'browser-sync'
@@ -27,6 +31,12 @@ gulp.task('html', function () {
 gulp.task('style', function () {
   console.log('========== Сборка стилей')
   return gulp.src(`${config.paths.src}/**/*.css`)
+  .pipe(gulpif(isDevelopment, plumber()))
+  .pipe(stylelint({
+    reporters: [
+      {formatter: 'string', console: true}
+    ]
+  }))
   .pipe(gulp.dest(config.paths.build))
   .pipe(gulpif(isDevelopment, browserSync.stream()))
 })
@@ -34,6 +44,9 @@ gulp.task('style', function () {
 gulp.task('js', function () {
   console.log('========== Сборка JS')
   gulp.src(`${config.paths.src}/**/*.js`)
+  .pipe(gulpif(isDevelopment, plumber()))
+  .pipe(gulpif(isDevelopment, eslint()))
+  .pipe(gulpif(isDevelopment, eslint.format()))
   .pipe(browserify({
     insertGlobals: true
   }))

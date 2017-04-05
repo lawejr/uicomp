@@ -5,7 +5,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(33, 33, 33, .5);
+  background-color: rgba(33, 33, 33, 0.5);
   text-align: center;
   z-index: 1000;
 }
@@ -15,7 +15,7 @@
 }
 
 .uc-modal::before {
-  content:"";
+  content: "";
   display: inline-block;
   vertical-align: middle;
   width: 0;
@@ -40,7 +40,7 @@
 
 .uc-modal__close-btn:hover,
 .uc-modal__close-btn:focus {
-  opacity: .5;
+  opacity: 0.5;
 }
 
 .uc-modal__close-btn::before,
@@ -62,5 +62,3 @@
 .uc-modal__close-btn::after {
   transform: translate(-50%) rotate(-45deg);
 }
-
-

@@ -1,4 +1,4 @@
-module.exports = function () {
+module.exports = (function () {
   var $ = document.querySelectorAll.bind(document)
   var body = document.body
   var overlays = $('.uc-modal')
@@ -6,7 +6,7 @@ module.exports = function () {
   var closeTriggers = $('[data-dismiss = uc-modal]')
   var activeModal = null
 
-  function _open(e) {
+  function _open (e) {
     e.preventDefault()
 
     var targetId = this.dataset.target
@@ -17,12 +17,12 @@ module.exports = function () {
     activeModal = target[0]
   }
 
-  function _close() {
+  function _close () {
     body.classList.remove('uc-no-scroll')
     activeModal.classList.remove('uc-modal--visible')
   }
 
-  function _overlayOnClick(e) {
+  function _overlayOnClick (e) {
     var target = e.target
     var isContent = target.closest('.uc-modal__content')
 
@@ -33,16 +33,16 @@ module.exports = function () {
     }
   }
 
-  function init() {
-    for (var i = 0; i < openTriggers.length; i++) {
+  function init () {
+    for (let i = openTriggers.length; i--;) {
       openTriggers[i].addEventListener('click', _open)
     }
 
-    for (var i = 0; i < closeTriggers.length; i++) {
+    for (let i = closeTriggers.length; i--;) {
       closeTriggers[i].addEventListener('click', _close)
     }
 
-    for (var i = 0; i < overlays.length; i++) {
+    for (let i = overlays.length; i--;) {
       overlays[i].addEventListener('click', _overlayOnClick)
     }
   }
@@ -50,4 +50,4 @@ module.exports = function () {
   return {
     init: init
   }
-}()
+})()
