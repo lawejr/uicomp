@@ -44,8 +44,8 @@ gulp.task('style', function () {
   .pipe(csso({
     restructure: !isDevelopment
   }))
-  .pipe(gulpif(isDevelopment, browserSync.stream()))
   .pipe(gulp.dest(config.paths.build))
+  .pipe(gulpif(isDevelopment, browserSync.stream()))
   .pipe(sourceMap.write('./'))
 })
 
@@ -61,6 +61,7 @@ gulp.task('js', function () {
     transform: ['babelify']
   }))
   .pipe(gulp.dest(config.paths.build))
+  .pipe(gulpif(isDevelopment, browserSync.stream()))
 })
 
 gulp.task('build', gulpSequence('clean', ['html', 'style', 'js']))
@@ -73,7 +74,7 @@ gulp.task('serve', function () {
   })
 
   gulp.watch("./src/**/*.css", ['style'])
-  gulp.watch("./src/**/*.js", ['js']).on('change', browserSync.reload)
+  gulp.watch("./src/**/*.js", ['js'])
   gulp.watch('./src/**/*.html', ['html']).on('change', browserSync.reload)
 })
 
