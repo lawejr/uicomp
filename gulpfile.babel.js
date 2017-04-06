@@ -44,9 +44,9 @@ gulp.task('style', function () {
   .pipe(csso({
     restructure: !isDevelopment
   }))
-  .pipe(sourceMap.write('./'))
-  .pipe(gulp.dest(config.paths.build))
   .pipe(gulpif(isDevelopment, browserSync.stream()))
+  .pipe(gulp.dest(config.paths.build))
+  .pipe(sourceMap.write('./'))
 })
 
 gulp.task('js', function () {
