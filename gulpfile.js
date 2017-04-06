@@ -15,6 +15,7 @@ const gulp = require('gulp')
 const sourcemaps = require('gulp-sourcemaps')
 const gulpIf = require('gulp-if')
 const less = require('gulp-less')
+const autoprefixer = require('gulp-autoprefixer')
 const del = require('del')
 
 gulp.task('html', function () {
@@ -23,10 +24,14 @@ gulp.task('html', function () {
 })
 
 gulp.task('styles', function () {
-  return gulp.src(paths.src.styles, { base: baseBath })
+  return gulp.src(paths.src.styles, { base: baseBath, since: gulp.lastRun('styles') })
   .pipe(gulpIf(isDevelopment, sourcemaps.init()))
   .pipe(less({
     paths: [baseBath + '_include/styles']
+  }))
+  .pipe(autoprefixer({
+    browsers: ['last 2 versions', 'ie >= 11'],
+    cascade: false
   }))
   .pipe(gulpIf(isDevelopment, sourcemaps.write()))
   .pipe(gulp.dest(paths.build))
