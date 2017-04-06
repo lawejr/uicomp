@@ -1,7 +1,12 @@
 'use strict'
-
+const baseBath = './src/'
 const paths = {
-  src: './src/',
+  src: {
+    styles: [
+      baseBath + 'components/**/*.less',
+      baseBath + 'navigation.less'
+    ]
+  },
   build: './build/'
 }
 const isDevelopment = !process.env.NODE_ENV || process.env.NODE_ENV == 'development'
@@ -13,18 +18,15 @@ const less = require('gulp-less')
 const del = require('del')
 
 gulp.task('html', function () {
-  return gulp.src(paths.src + '**/*.html')
+  return gulp.src(baseBath + '**/*.html', { since: gulp.lastRun('html') })
   .pipe(gulp.dest(paths.build))
 })
 
 gulp.task('styles', function () {
-  return gulp.src([
-    paths.src + '/components/**/*.less',
-    paths.src + 'navigation.less'
-  ], { base: paths.src })
+  return gulp.src(paths.src.styles, { base: baseBath })
   .pipe(gulpIf(isDevelopment, sourcemaps.init()))
   .pipe(less({
-    paths: [paths.src + '_include/styles']
+    paths: [baseBath + '_include/styles']
   }))
   .pipe(gulpIf(isDevelopment, sourcemaps.write()))
   .pipe(gulp.dest(paths.build))
@@ -39,6 +41,9 @@ gulp.task('build', gulp.series(
   gulp.parallel('html', 'styles')
 ))
 
-gulp.task('default', function () {
-
+gulp.task('watch', function () {
+  gulp.watch(baseBath + '**/*.html', gulp.series('html'))
+  gulp.watch(paths.src.styles, gulp.series('styles'))
 })
+
+gulp.task('default', gulp.series('build', 'watch'))
