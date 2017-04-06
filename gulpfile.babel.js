@@ -14,6 +14,7 @@ import sourceMap from 'gulp-sourcemaps'
 
 import browserify from 'gulp-browserify'
 import csso from 'gulp-csso'
+import autoprefixer from 'gulp-autoprefixer'
 
 const browserSync = browserSyncCreate()
 const isDevelopment = !process.env.NODE_ENV || process.env.NODE_ENV == 'dev'
@@ -39,6 +40,10 @@ gulp.task('style', function () {
     reporters: [
       { formatter: 'string', console: true }
     ]
+  }))
+  .pipe(autoprefixer({
+    browsers: ['last 2 versions', 'ie >= 11'],
+    cascade: false
   }))
   .pipe(sourceMap.init())
   .pipe(csso({
