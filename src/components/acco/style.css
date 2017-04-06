@@ -1,0 +1,23 @@
+.uc-acco {
+  margin: 0;
+  padding-left: 0;
+  list-style-type: none;
+}
+
+.uc-acco__content {
+  overflow: hidden;
+  max-height: 0;
+  transition-property: max-height;
+  transition-duration: 0.3s;
+  transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+  transform: translateZ(-1px);
+}
+
+.uc-no-js .uc-acco__content {
+  max-height: none;
+}
+
+.uc-acco__item--opened .uc-acco__content {
+  max-height: 600px;
+  transition-timing-function: ease-in;
+}

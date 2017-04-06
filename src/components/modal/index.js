@@ -63,7 +63,7 @@ module.exports = (function () {
 
   function _getScrollWidth () {
     let div = document.createElement('div')
-    let scrollWidth = 0
+    let scrollWidth
 
     div.style.overflowY = 'scroll'
     div.style.width = '50px'
