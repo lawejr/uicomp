@@ -16,12 +16,11 @@
   href="http://browsehappy.com/">обновите его</a>.</p>
 <![endif]-->
 <ul class="nav-collection">
-  <li class="nav-collection__item">
-    <a href="./components/modal/index.html" class="nav-collection__link">Модальное окно</a>
-  </li>
-  <li class="nav-collection__item">
-    <a href="./components/acco/index.html" class="nav-collection__link">Аккордеоны</a>
-  </li>
+  {% for title, prop in components %}
+    <li class="nav-collection__item">
+      <a href="{{ prop.link }}" class="nav-collection__link">{{ prop.desc }}</a>
+    </li>
+  {% endfor %}
 </ul>
 </body>
 

@@ -1,0 +1,10 @@
+{
+  "acco": {
+    "link": "/demo/acco/index.html",
+    "desc": "Аккордеоны"
+  },
+  "modal": {
+    "link": "/demo/modal/index.html",
+    "desc": "Модальныое окно"
+  }
+}

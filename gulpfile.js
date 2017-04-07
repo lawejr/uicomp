@@ -12,11 +12,13 @@ const paths = {
       dist: basePath + 'components/**/page-*.js'
     }
   },
+  demo: './build/demo/',
   build: './build/',
   manifest: './manifest/'
 }
 const isDevelopment = !process.env.NODE_ENV || process.env.NODE_ENV == 'development'
 
+const componentsList = require('./src/components-list.json')
 const path = require('path')
 const gulp = require('gulp')
 const $ = require('gulp-load-plugins')()
@@ -29,9 +31,24 @@ const webpack = webpackStream.webpack
 const AssetsPlugin = require('assets-webpack-plugin')
 const named = require('vinyl-named')
 
-gulp.task('html', function () {
+function getFileName (file) {
+  return {
+    title: file.stem
+  }
+}
+
+gulp.task('templates:demo', function () {
   console.log('========== Сборка HTML')
-  return gulp.src(basePath + '**/*.html', { since: gulp.lastRun('html') })
+  return gulp.src([
+    basePath + 'components/**/*.{html,njk}',
+    basePath + 'index.njk'
+    ], { since: gulp.lastRun('templates:demo') })
+  .pipe($.data(getFileName))
+  .pipe($.nunjucksRender({
+    data: {
+      components: componentsList
+    }
+  }))
   .pipe($.if(!isDevelopment, combiner(
     $.revReplace({
       manifest: gulp.src(paths.manifest + 'css.json', { allowEmpty: true })
@@ -40,7 +57,7 @@ gulp.task('html', function () {
       manifest: gulp.src(paths.manifest + 'scripts.json', { allowEmpty: true })
     })
   )))
-  .pipe(gulp.dest(paths.build))
+  .pipe(gulp.dest(paths.demo))
   .pipe(browserSync.stream())
 })
 
@@ -154,18 +171,22 @@ gulp.task('clean', function () {
 
 gulp.task('build', gulp.series(
   'clean',
-  gulp.parallel('html', 'styles', gulp.series('lint', 'scripts'))
+  gulp.parallel('templates:demo', 'styles', gulp.series('lint', 'scripts'))
 ))
 
 gulp.task('watch', function () {
-  gulp.watch(basePath + '**/*.html', gulp.series('html'))
+  gulp.watch([
+    basePath + 'components/**/*.{html,njk}',
+    basePath + 'index.njk'
+  ], gulp.series('templates:demo'))
   gulp.watch(paths.src.styles, gulp.series('styles'))
   $.if(isDevelopment, gulp.watch(paths.src.scripts.all, gulp.series('lint')))
 })
 
 gulp.task('serve', function () {
   browserSync.init({
-    server: paths.build
+    server: paths.build,
+    index: "demo/index.html"
   })
 })
 
