@@ -1,41 +1,57 @@
 'use strict'
 
-const baseBath = './src/'
+const basePath = './src/'
 const paths = {
   src: {
     styles: [
-      baseBath + 'components/**/*.less',
-      baseBath + 'navigation.less'
+      basePath + 'components/**/*.less',
+      basePath + 'navigation.less'
     ],
-    scripts: [baseBath + 'components/**/*.js']
+    scripts: {
+      all: basePath + 'components/**/*.js',
+      dist: basePath + 'components/**/page-*.js'
+    }
   },
   build: './build/',
   manifest: './manifest/'
 }
 const isDevelopment = !process.env.NODE_ENV || process.env.NODE_ENV == 'development'
 
+const path = require('path')
 const gulp = require('gulp')
 const $ = require('gulp-load-plugins')()
 // const debug = require('gulp-debug')
 const del = require('del')
 const browserSync = require('browser-sync').create()
 const combiner = require('stream-combiner2').obj
+const webpackStream = require('webpack-stream')
+const webpack = webpackStream.webpack
+const AssetsPlugin = require('assets-webpack-plugin')
+const named = require('vinyl-named')
 
 gulp.task('html', function () {
-  return gulp.src(baseBath + '**/*.html', { since: gulp.lastRun('html') })
-  .pipe($.if(!isDevelopment, $.revReplace({
-    manifest: gulp.src(paths.manifest + 'css.json', { allowEmpty: true })
-  })))
+  return gulp.src(basePath + '**/*.html', { since: gulp.lastRun('html') })
+  .pipe($.if(!isDevelopment, combiner(
+    $.revReplace({
+      manifest: gulp.src(paths.manifest + 'css.json', { allowEmpty: true })
+    }),
+    $.revReplace({
+      manifest: gulp.src(paths.manifest + 'scripts.json', { allowEmpty: true })
+    })
+  )))
   .pipe(gulp.dest(paths.build))
   .pipe(browserSync.stream())
 })
 
 gulp.task('styles', function () {
   return combiner(
-    gulp.src(paths.src.styles, { base: baseBath, since: gulp.lastRun('styles') }),
+    gulp.src(paths.src.styles, { base: basePath, since: gulp.lastRun('styles') }),
     $.if(isDevelopment, $.sourcemaps.init()),
+    $.if(isDevelopment, $.stylelint({
+      reporters: [{ formatter: 'string', console: true }]
+    })),
     $.less({
-      paths: [baseBath + '_include/styles']
+      paths: [basePath + '_include/styles']
     }),
     $.autoprefixer({
       browsers: ['last 2 versions', 'ie >= 11'],
@@ -55,9 +71,63 @@ gulp.task('styles', function () {
   ).on('error', $.notify.onError())
 })
 
-// gulp.task('scripts', ['lint'], function () {
-//
-// })
+gulp.task('scripts', function (callback) {
+  let firstBuildReady = false
+  let options = {
+    watch: isDevelopment,
+    devtool: isDevelopment ? 'cheap-module-inline-source-map' : null,
+    module: {
+      loaders: [
+        {
+          test: /\.js$/,
+          include: path.join(__dirname, basePath + 'components/'),
+          loader: 'babel-loader'
+        }
+      ]
+    },
+    plugins: [
+      new webpack.NoErrorsPlugin()
+    ],
+    output: {
+      publicPath: basePath,
+      filename: isDevelopment ? '[name].js' : '[name]-[chunkhash:10].js'
+    }
+  }
+
+  if (!isDevelopment) {
+    options.plugins.push(new AssetsPlugin({
+      filename: 'scripts.json',
+      path: paths.manifest,
+      processOutput(assets) {
+        for (let key in assets) {
+          assets[key + '.js'] = assets[key].js.slice(options.output.publicPath.length)
+          delete assets[key]
+        }
+        return JSON.stringify(assets)
+      }
+    }))
+  }
+
+  function done (err, stats) {
+    firstBuildReady = true
+    if (err) return
+    console.log(stats.toString({ colors: true }))
+  }
+
+  return gulp.src(paths.src.scripts.dist)
+  .pipe($.plumber({
+    errorHandler: $.notify.onError()
+  }))
+  .pipe(named())
+  .pipe(webpackStream(options, null, done))
+  .pipe($.if(!isDevelopment, $.uglify()))
+  .pipe(gulp.dest(paths.build))
+  .on('data', function () {
+    if (firstBuildReady) {
+      callback()
+    }
+  })
+})
 
 gulp.task('assets', function () {
   return gulp.src('./tpmPath', { since: gulp.lastRun('assets') })
@@ -65,26 +135,28 @@ gulp.task('assets', function () {
 
 gulp.task('lint', function () {
   return combiner(
-    gulp.src(paths.src.scripts, { since: gulp.lastRun('lint') }),
+    gulp.src(paths.src.scripts.all, { since: gulp.lastRun('lint') }),
     $.eslint(),
     $.eslint.format(),
+    $.eslint.failAfterError(),
     gulp.dest(paths.build)
   ).on('error', $.notify.onError())
 })
 
 gulp.task('clean', function () {
+  del(paths.manifest)
   return del(paths.build)
 })
 
 gulp.task('build', gulp.series(
   'clean',
-  gulp.parallel('html', 'styles')
+  gulp.parallel('html', 'styles', gulp.series('lint', 'scripts'))
 ))
 
 gulp.task('watch', function () {
-  gulp.watch(baseBath + '**/*.html', gulp.series('html'))
+  gulp.watch(basePath + '**/*.html', gulp.series('html'))
   gulp.watch(paths.src.styles, gulp.series('styles'))
-  gulp.watch(paths.src.scripts, gulp.series('lint'))
+  $.if(isDevelopment, gulp.watch(paths.src.scripts.all, gulp.series('lint')))
 })
 
 gulp.task('serve', function () {
