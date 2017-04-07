@@ -30,6 +30,7 @@ const AssetsPlugin = require('assets-webpack-plugin')
 const named = require('vinyl-named')
 
 gulp.task('html', function () {
+  console.log('========== Сборка HTML')
   return gulp.src(basePath + '**/*.html', { since: gulp.lastRun('html') })
   .pipe($.if(!isDevelopment, combiner(
     $.revReplace({
@@ -59,7 +60,9 @@ gulp.task('styles', function () {
     }),
     $.if(isDevelopment, $.sourcemaps.write()),
     $.if(!isDevelopment, combiner(
-      $.csso(),
+      $.csso({
+        restructure: !isDevelopment
+      }),
       $.rev())
     ),
     gulp.dest(paths.build),
@@ -144,6 +147,7 @@ gulp.task('lint', function () {
 })
 
 gulp.task('clean', function () {
+  console.log('========== Очистка папок сборки')
   del(paths.manifest)
   return del(paths.build)
 })
