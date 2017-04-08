@@ -13,7 +13,7 @@ const paths = {
     ],
     scripts: {
       all: basePath + 'components/**/*.js',
-      dist: basePath + 'components/**/page-*.js'
+      demo: basePath + 'components/**/demo-*.js'
     }
   },
   demo: './build/demo/',
@@ -121,6 +121,65 @@ gulp.task('styles', function () {
   ).on('error', $.notify.onError())
 })
 
+gulp.task('scripts:demo', function (callback) {
+  let firstBuildReady = false
+  let options = {
+    watch: isDevelopment,
+    devtool: isDevelopment ? 'cheap-module-inline-source-map' : null,
+    module: {
+      loaders: [
+        {
+          test: /\.js$/,
+          loader: 'babel-loader'
+        }
+      ]
+    },
+    plugins: [
+      new webpack.NoErrorsPlugin()
+    ],
+    output: {
+      filename: isDevelopment ? '[name].js' : '[name]-[chunkhash:10].js'
+    }
+  }
+
+  if (!isDevelopment) {
+    options.plugins.push(new AssetsPlugin({
+      filename: 'scripts.json',
+      path: paths.manifest,
+      processOutput(assets) {
+        for (let key in assets) {
+          assets[key + '.js'] = assets[key].js.slice(options.output.publicPath.length)
+          delete assets[key]
+        }
+        return JSON.stringify(assets)
+      }
+    }))
+  }
+
+  function done (err, stats) {
+    firstBuildReady = true
+    if (err) return
+    console.log(stats.toString({ colors: true }))
+  }
+
+  return gulp.src(paths.src.scripts.demo)
+  .pipe($.plumber({
+    errorHandler: $.notify.onError()
+  }))
+  .pipe(named())
+  .pipe(webpackStream(options, null, done))
+  .pipe($.if(!isDevelopment, $.uglify()))
+  .pipe(gulp.dest(function (file) {
+    let dirName = getFileName(file).title.replace('demo-', '') + '/'
+    return paths.demo + dirName
+  }))
+  .on('data', function () {
+    if (firstBuildReady) {
+      callback()
+    }
+  })
+})
+
 gulp.task('scripts', function (callback) {
   let firstBuildReady = false
   let options = {
@@ -164,7 +223,7 @@ gulp.task('scripts', function (callback) {
     console.log(stats.toString({ colors: true }))
   }
 
-  return gulp.src(paths.src.scripts.dist)
+  return gulp.src(paths.src.scripts.demo)
   .pipe($.plumber({
     errorHandler: $.notify.onError()
   }))
@@ -183,13 +242,12 @@ gulp.task('assets', function () {
   return gulp.src('./tpmPath', { since: gulp.lastRun('assets') })
 })
 
-gulp.task('lint', function () {
+gulp.task('lint:js', function () {
   return combiner(
-    gulp.src(paths.src.scripts.all, { since: gulp.lastRun('lint') }),
+    gulp.src(paths.src.scripts.all, { since: gulp.lastRun('lint:js') }),
     $.eslint(),
     $.eslint.format(),
-    $.eslint.failAfterError(),
-    gulp.dest(paths.build)
+    $.eslint.failAfterError()
   ).on('error', $.notify.onError())
 })
 
@@ -201,13 +259,13 @@ gulp.task('clean', function () {
 
 gulp.task('build', gulp.series(
   'clean',
-  gulp.parallel('templates:demo', 'styles:demo', gulp.series('lint', 'scripts'))
+  gulp.parallel('templates:demo', 'styles:demo', gulp.series('lint:js', 'scripts:demo'))
 ))
 
 gulp.task('watch', function () {
   gulp.watch(paths.src.templates, gulp.series('templates:demo'))
   gulp.watch(paths.src.styles, gulp.series('styles:demo'))
-  $.if(isDevelopment, gulp.watch(paths.src.scripts.all, gulp.series('lint')))
+  $.if(isDevelopment, gulp.watch(paths.src.scripts.all, gulp.series('lint:js')))
 })
 
 gulp.task('serve', function () {
