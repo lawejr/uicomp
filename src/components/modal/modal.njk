@@ -1,14 +1,6 @@
-<!doctype html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Модальное окно</title>
-  <link rel="stylesheet" href="/components/modal/style.css"/>
-</head>
-<body>
+{% extends Layout %}
+
+{% block content %}
   <button data-toggle="uc-modal" data-target="modal-id" type="button">Открыть</button>
   <div class="uc-modal" id="modal-id">
     <div class="uc-modal__content">
@@ -19,6 +11,8 @@
       </button>
     </div>
   </div>
-</body>
-<script src="/page-modal.js"></script>
-</html>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/page-modal.js"></script>
+{% endblock %}

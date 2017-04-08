@@ -3,6 +3,10 @@
 const basePath = './src/'
 const paths = {
   src: {
+    templates: [
+      basePath + 'components/**/*.{html,njk}',
+      basePath + 'index.njk'
+    ],
     styles: [
       basePath + 'components/**/*.less',
       basePath + 'navigation.less'
@@ -39,13 +43,11 @@ function getFileName (file) {
 
 gulp.task('templates:demo', function () {
   console.log('========== Сборка HTML')
-  return gulp.src([
-    basePath + 'components/**/*.{html,njk}',
-    basePath + 'index.njk'
-    ], { since: gulp.lastRun('templates:demo') })
+  return gulp.src(paths.src.templates, { since: gulp.lastRun('templates:demo') })
   .pipe($.data(getFileName))
   .pipe($.nunjucksRender({
     data: {
+      Layout: path.join(__dirname, basePath + '_include/demo-layout.njk'),
       components: componentsList
     }
   }))
@@ -175,10 +177,7 @@ gulp.task('build', gulp.series(
 ))
 
 gulp.task('watch', function () {
-  gulp.watch([
-    basePath + 'components/**/*.{html,njk}',
-    basePath + 'index.njk'
-  ], gulp.series('templates:demo'))
+  gulp.watch(paths.src.templates, gulp.series('templates:demo'))
   gulp.watch(paths.src.styles, gulp.series('styles'))
   $.if(isDevelopment, gulp.watch(paths.src.scripts.all, gulp.series('lint')))
 })
