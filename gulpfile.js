@@ -43,10 +43,10 @@ function getFileName (file) {
 
 gulp.task('templates:demo', function () {
   console.log('========== Сборка HTML')
-  // let replaceRegExp = isDevelopment ? /\n\s*<!--DEV|DEV-->/gm : /\n\s*<!--DEV[\s\S]+?DEV-->/gm
+  // let replaceRegExp = isDevelopment ? /\n\s*<!--DEV|DEV-->/gm : /\n\s*<!--DEMO[\s\S]+?DEMO-->/gm
 
   return gulp.src(paths.src.templates, { since: gulp.lastRun('templates:demo') })
-  .pipe($.replace(/\n\s*<!--DEV|DEV-->/gm, ''))
+  .pipe($.replace(/\n\s*<!--DEMO|DEMO-->/gm, ''))
   .pipe($.data(getFileName))
   .pipe($.nunjucksRender({
     data: {
