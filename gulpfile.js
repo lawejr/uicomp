@@ -17,7 +17,7 @@ const paths = {
     }
   },
   demo: './build/demo/',
-  build: './build/',
+  build: './build/components',
   manifest: './manifest/'
 }
 const isDevelopment = !process.env.NODE_ENV || process.env.NODE_ENV == 'development'
@@ -42,8 +42,7 @@ function getFileName (file) {
 }
 
 gulp.task('templates:demo', function () {
-  console.log('========== Сборка HTML')
-  // let replaceRegExp = isDevelopment ? /\n\s*<!--DEV|DEV-->/gm : /\n\s*<!--DEMO[\s\S]+?DEMO-->/gm
+  console.log('========== Сборка HTML для DEMO')
 
   return gulp.src(paths.src.templates, { since: gulp.lastRun('templates:demo') })
   .pipe($.replace(/\n\s*<!--DEMO|DEMO-->/gm, ''))
@@ -64,6 +63,17 @@ gulp.task('templates:demo', function () {
   )))
   .pipe(gulp.dest(paths.demo))
   .pipe($.if(isDevelopment, browserSync.stream()))
+})
+
+gulp.task('templates:src', function () {
+  console.log('========== Подготовка исходного HTML')
+
+  return gulp.src(paths.src.templates[0], { since: gulp.lastRun('templates:src') })
+  .pipe($.replace(/\n\s*<!--DEMO[\s\S]+?DEMO-->/gm, ''))
+  .pipe($.rename(function (path) {
+    path.extname = ".html"
+  }))
+  .pipe(gulp.dest(paths.build))
 })
 
 gulp.task('styles:demo', function () {
