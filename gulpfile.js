@@ -13,11 +13,13 @@ const paths = {
     ],
     scripts: {
       all: basePath + 'components/**/*.js',
+      dist: basePath + 'components/**/index.js',
       demo: basePath + 'components/**/demo-*.js'
     }
   },
+  build: './build/',
   demo: './build/demo/',
-  build: './build/components',
+  dist: './build/components/',
   manifest: './manifest/'
 }
 const isDevelopment = !process.env.NODE_ENV || process.env.NODE_ENV == 'development'
@@ -65,15 +67,15 @@ gulp.task('templates:demo', function () {
   .pipe($.if(isDevelopment, browserSync.stream()))
 })
 
-gulp.task('templates:src', function () {
+gulp.task('templates:dist', function () {
   console.log('========== Подготовка исходного HTML')
 
-  return gulp.src(paths.src.templates[0], { since: gulp.lastRun('templates:src') })
+  return gulp.src(paths.src.templates[0], { since: gulp.lastRun('templates:dist') })
   .pipe($.replace(/\n\s*<!--DEMO[\s\S]+?DEMO-->/gm, ''))
   .pipe($.rename(function (path) {
     path.extname = ".html"
   }))
-  .pipe(gulp.dest(paths.build))
+  .pipe(gulp.dest(paths.dist))
 })
 
 gulp.task('styles:demo', function () {
@@ -107,22 +109,24 @@ gulp.task('styles:demo', function () {
   ).on('error', $.notify.onError())
 })
 
-gulp.task('styles:src', function () {
+gulp.task('styles:dist', function () {
   console.log('========== Подготовка исходного CSS')
 
   return combiner(
-    gulp.src([paths.src.styles[0], basePath + '_include/styles/general.less'], { since: gulp.lastRun('styles:src') }),
+    gulp.src([paths.src.styles[0], basePath + '_include/styles/general.less'], { since: gulp.lastRun('styles:dist') }),
     $.replace(/\n\s*\/\*DEMO[\s\S]+?DEMO\*\/ /gm, ''),
     $.less(),
     $.autoprefixer({
       browsers: ['last 2 versions', 'ie >= 11'],
       cascade: true
     }),
-    gulp.dest(paths.build)
+    gulp.dest(paths.dist)
   ).on('error', $.notify.onError())
 })
 
 gulp.task('scripts:demo', function (callback) {
+  console.log('========== Сборка JS')
+
   let firstBuildReady = false
   let options = {
     watch: isDevelopment,
@@ -181,62 +185,11 @@ gulp.task('scripts:demo', function (callback) {
   })
 })
 
-gulp.task('scripts', function (callback) {
-  let firstBuildReady = false
-  let options = {
-    watch: isDevelopment,
-    devtool: isDevelopment ? 'cheap-module-inline-source-map' : null,
-    module: {
-      loaders: [
-        {
-          test: /\.js$/,
-          include: path.join(__dirname, basePath + 'components/'),
-          loader: 'babel-loader'
-        }
-      ]
-    },
-    plugins: [
-      new webpack.NoErrorsPlugin()
-    ],
-    output: {
-      publicPath: basePath,
-      filename: isDevelopment ? '[name].js' : '[name]-[chunkhash:10].js'
-    }
-  }
+gulp.task('scripts:dist', function () {
+  console.log('========== Подготовка исходного JS')
 
-  if (!isDevelopment) {
-    options.plugins.push(new AssetsPlugin({
-      filename: 'scripts.json',
-      path: paths.manifest,
-      processOutput(assets) {
-        for (let key in assets) {
-          assets[key + '.js'] = assets[key].js.slice(options.output.publicPath.length)
-          delete assets[key]
-        }
-        return JSON.stringify(assets)
-      }
-    }))
-  }
-
-  function done (err, stats) {
-    firstBuildReady = true
-    if (err) return
-    console.log(stats.toString({ colors: true }))
-  }
-
-  return gulp.src(paths.src.scripts.demo)
-  .pipe($.plumber({
-    errorHandler: $.notify.onError()
-  }))
-  .pipe(named())
-  .pipe(webpackStream(options, null, done))
-  .pipe($.if(!isDevelopment, $.uglify()))
-  .pipe(gulp.dest(paths.build))
-  .on('data', function () {
-    if (firstBuildReady) {
-      callback()
-    }
-  })
+  return gulp.src(paths.src.scripts.dist)
+  .pipe(gulp.dest(paths.dist))
 })
 
 gulp.task('assets', function () {
@@ -252,15 +205,27 @@ gulp.task('lint:js', function () {
   ).on('error', $.notify.onError())
 })
 
-gulp.task('clean', function () {
+gulp.task('clean:dist', function () {
+  console.log('========== Очистка папок DIST')
+
+  return del(paths.dist)
+})
+
+gulp.task('clean:all', function () {
   console.log('========== Очистка папок сборки')
+
   del(paths.manifest)
   return del(paths.build)
 })
 
-gulp.task('build', gulp.series(
-  'clean',
+gulp.task('build:demo', gulp.series(
+  'clean:all',
   gulp.parallel('templates:demo', 'styles:demo', gulp.series('lint:js', 'scripts:demo'))
+))
+
+gulp.task('build:dist', gulp.series(
+  'clean:dist',
+  gulp.parallel('templates:dist', 'styles:dist', 'scripts:dist')
 ))
 
 gulp.task('watch', function () {
@@ -276,4 +241,4 @@ gulp.task('serve', function () {
   })
 })
 
-gulp.task('default', gulp.series('build', gulp.parallel('watch', 'serve')))
+gulp.task('default', gulp.series('build:demo', gulp.parallel('watch', 'serve')))
