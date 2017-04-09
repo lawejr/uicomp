@@ -1,4 +1,23 @@
-@import "general";
+
+//DEMO @import "general";
+
+/* === ОБЩИЕ СТИЛИ - могут быть подключены отдельно из general.css */
+.visually-hidden {
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  width: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+}
+
+.uc-no-scroll {
+  overflow: hidden;
+}
+
+/* === КОНЕЦ ОБЩИЙ СТИЛЕЙ */
 
 .uc-modal {
   display: none;
@@ -9,6 +28,7 @@
   bottom: 0;
   text-align: center;
   z-index: 1000;
+  display: flex;
 }
 
 .uc-modal::before {

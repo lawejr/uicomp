@@ -77,8 +77,11 @@ gulp.task('templates:src', function () {
 })
 
 gulp.task('styles:demo', function () {
+  console.log('========== Сборка CSS для DEMO')
+
   return combiner(
     gulp.src(paths.src.styles, { since: gulp.lastRun('styles:demo') }),
+    $.replace('//DEMO ', ''),   //TODO: Переписать на regexp
     $.if(isDevelopment, $.sourcemaps.init()),
     $.if(isDevelopment, $.stylelint({
       reporters: [{ formatter: 'string', console: true }]
@@ -104,33 +107,18 @@ gulp.task('styles:demo', function () {
   ).on('error', $.notify.onError())
 })
 
-gulp.task('styles', function () {
+gulp.task('styles:src', function () {
+  console.log('========== Подготовка исходного CSS')
+
   return combiner(
-    gulp.src(paths.src.styles, { base: basePath, since: gulp.lastRun('styles') }),
-    $.if(isDevelopment, $.sourcemaps.init()),
-    $.if(isDevelopment, $.stylelint({
-      reporters: [{ formatter: 'string', console: true }]
-    })),
-    $.less({
-      paths: [basePath + '_include/styles']
-    }),
+    gulp.src([paths.src.styles[0], basePath + '_include/styles/general.less'], { since: gulp.lastRun('styles:src') }),
+    $.replace(/\n\s*\/\*DEMO[\s\S]+?DEMO\*\/ /gm, ''),
+    $.less(),
     $.autoprefixer({
       browsers: ['last 2 versions', 'ie >= 11'],
-      cascade: false
+      cascade: true
     }),
-    $.if(isDevelopment, $.sourcemaps.write()),
-    $.if(!isDevelopment, combiner(
-      $.csso({
-        restructure: !isDevelopment
-      }),
-      $.rev())
-    ),
-    gulp.dest(paths.build),
-    $.if(!isDevelopment, combiner(
-      $.rev.manifest('css.json'),
-      gulp.dest(paths.manifest))
-    ),
-    $.if(isDevelopment, browserSync.stream())
+    gulp.dest(paths.build)
   ).on('error', $.notify.onError())
 })
 
