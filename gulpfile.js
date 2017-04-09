@@ -41,7 +41,33 @@ gulp.task('html', function () {
     })
   )))
   .pipe(gulp.dest(paths.build))
-  .pipe(browserSync.stream())
+  .pipe($.if(!isDevelopment, browserSync.stream()))
+})
+
+
+gulp.task('templates:demo', function () {
+  console.log('========== Сборка HTML')
+  // let replaceRegExp = isDevelopment ? /\n\s*<!--DEV|DEV-->/gm : /\n\s*<!--DEMO[\s\S]+?DEMO-->/gm
+
+  return gulp.src(paths.src.templates, { since: gulp.lastRun('templates:demo') })
+  .pipe($.replace(/\n\s*<!--DEMO|DEMO-->/gm, ''))
+  .pipe($.data(getFileName))
+  .pipe($.nunjucksRender({
+    data: {
+      Layout: path.join(__dirname, basePath + '_include/demo-layout.njk'),
+      components: componentsList
+    }
+  }))
+  .pipe($.if(!isDevelopment, combiner(
+    $.revReplace({
+      manifest: gulp.src(paths.manifest + 'css.json', { allowEmpty: true })
+    }),
+    $.revReplace({
+      manifest: gulp.src(paths.manifest + 'scripts.json', { allowEmpty: true })
+    })
+  )))
+  .pipe(gulp.dest(paths.demo))
+  .pipe($.if(isDevelopment, browserSync.stream()))
 })
 
 gulp.task('styles', function () {
