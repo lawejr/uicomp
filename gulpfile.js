@@ -46,6 +46,10 @@ function getFileName (file) {
 gulp.task('templates:demo', function () {
   console.log('========== Сборка HTML для DEMO')
 
+  function modifyForGHPages (filename) {
+    return 'uicomp/demo/' + filename
+  }
+
   return gulp.src(paths.src.templates, { since: gulp.lastRun('templates:demo') })
   .pipe($.replace(/\n\s*<!--DEMO|DEMO-->/gm, ''))
   .pipe($.data(getFileName))
@@ -57,13 +61,14 @@ gulp.task('templates:demo', function () {
   }))
   .pipe($.if(!isDevelopment, combiner(
     $.revReplace({
-      manifest: gulp.src(paths.manifest + 'css.json', { allowEmpty: true })
+      manifest: gulp.src(paths.manifest + 'css.json', { allowEmpty: true }),
+      modifyReved: modifyForGHPages
     }),
     $.revReplace({
-      manifest: gulp.src(paths.manifest + 'scripts.json', { allowEmpty: true })
-    })
-    // ,
-    // $.htmlmin({ collapseWhitespace: true })
+      manifest: gulp.src(paths.manifest + 'scripts.json', { allowEmpty: true }),
+      // modifyReved: modifyForGHPages
+    }),
+    $.htmlmin({ collapseWhitespace: true })
   )))
   .pipe(gulp.dest(paths.demo))
   .pipe($.if(isDevelopment, browserSync.stream()))
@@ -85,7 +90,7 @@ gulp.task('styles:demo', function () {
 
   return combiner(
     gulp.src(paths.src.styles, { since: gulp.lastRun('styles:demo') }),
-    $.replace('//DEMO ', ''),   //TODO: Переписать на regexp
+    $.replace('//DEMO ', ''),
     $.if(isDevelopment, $.sourcemaps.init()),
     $.if(isDevelopment, $.stylelint({
       reporters: [{ formatter: 'string', console: true }]
@@ -156,7 +161,9 @@ gulp.task('scripts:demo', function (callback) {
       path: paths.manifest,
       processOutput(assets) {
         for (let key in assets) {
-          assets[key + '.js'] = assets[key].js.slice(options.output.publicPath.length)
+          let compDir = key.replace('demo-', '') + '/'
+
+          assets[compDir + key + '.js'] = 'uicomp/demo/' + compDir + assets[key].js.slice(options.output.publicPath.length)
           delete assets[key]
         }
         return JSON.stringify(assets)
@@ -243,7 +250,7 @@ gulp.task('build:dist', gulp.series(
 
 gulp.task('deploy', function() {
   gulp.series('build:dist')
-  console.log('---------- Публикация содержимого ./build/ на GH-pages')
+  console.log('========== Публикация содержимого ./build/ на GH-pages')
   return gulp.src(paths.build + '**/*')
   .pipe($.ghPages())
 });
