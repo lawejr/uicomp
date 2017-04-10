@@ -243,7 +243,7 @@ gulp.task('build:dist', gulp.series(
 
 gulp.task('deploy', function() {
   gulp.series('build:dist')
-
+  console.log('---------- Публикация содержимого ./build/ на GH-pages')
   return gulp.src(paths.build + '**/*')
   .pipe($.ghPages())
 });
@@ -256,8 +256,7 @@ gulp.task('watch', function () {
 
 gulp.task('serve', function () {
   browserSync.init({
-    server: paths.demo,
-    index: "/index.html"
+    server: paths.demo
   })
 })
 
