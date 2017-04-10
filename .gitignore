@@ -6,3 +6,5 @@ yarn.loc
 .idea/
 build/
 manifest/
+.publish/
+

@@ -62,6 +62,8 @@ gulp.task('templates:demo', function () {
     $.revReplace({
       manifest: gulp.src(paths.manifest + 'scripts.json', { allowEmpty: true })
     })
+    // ,
+    // $.htmlmin({ collapseWhitespace: true })
   )))
   .pipe(gulp.dest(paths.demo))
   .pipe($.if(isDevelopment, browserSync.stream()))
@@ -143,6 +145,7 @@ gulp.task('scripts:demo', function (callback) {
       new webpack.NoErrorsPlugin()
     ],
     output: {
+      publicPath: '',
       filename: isDevelopment ? '[name].js' : '[name]-[chunkhash:10].js'
     }
   }
@@ -175,7 +178,8 @@ gulp.task('scripts:demo', function (callback) {
   .pipe(webpackStream(options, null, done))
   .pipe($.if(!isDevelopment, $.uglify()))
   .pipe(gulp.dest(function (file) {
-    let dirName = getFileName(file).title.replace('demo-', '') + '/'
+    let dirName = getFileName(file).title.split('-')[1] + '/'
+
     return paths.demo + dirName
   }))
   .on('data', function () {
@@ -220,13 +224,29 @@ gulp.task('clean:all', function () {
 
 gulp.task('build:demo', gulp.series(
   'clean:all',
-  gulp.parallel('templates:demo', 'styles:demo', gulp.series('lint:js', 'scripts:demo'))
+  gulp.series(
+    'lint:js',
+    'scripts:demo',
+    'styles:demo',
+    'templates:demo'
+  )
 ))
 
 gulp.task('build:dist', gulp.series(
-  'clean:dist',
-  gulp.parallel('templates:dist', 'styles:dist', 'scripts:dist')
+  'build:demo',
+  gulp.parallel(
+    'templates:dist',
+    'styles:dist',
+    'scripts:dist'
+  )
 ))
+
+gulp.task('deploy', function() {
+  gulp.series('build:dist')
+
+  return gulp.src(paths.build + '**/*')
+  .pipe($.ghPages())
+});
 
 gulp.task('watch', function () {
   gulp.watch(paths.src.templates, gulp.series('templates:demo'))
