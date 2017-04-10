@@ -1,6 +1,3 @@
-
-//DEMO @import "general";
-
 /* === ОБЩИЕ СТИЛИ - могут быть подключены отдельно из general.css */
 .visually-hidden {
   position: absolute;
@@ -12,13 +9,10 @@
   padding: 0;
   border: 0;
 }
-
 .uc-no-scroll {
   overflow: hidden;
 }
-
 /* === КОНЕЦ ОБЩИЙ СТИЛЕЙ */
-
 .uc-modal {
   display: none;
   position: fixed;
@@ -29,7 +23,6 @@
   text-align: center;
   z-index: 1000;
 }
-
 .uc-modal::before {
   content: "";
   display: block;
@@ -39,9 +32,8 @@
   right: 0;
   bottom: 0;
   opacity: 0.7;
-  background-color: rgb(33, 33, 33);
+  background-color: #212121;
 }
-
 .uc-modal::after {
   content: "";
   display: inline-block;
@@ -49,11 +41,9 @@
   width: 0;
   height: 100%;
 }
-
 .uc-modal--visible {
   display: block;
 }
-
 .uc-modal__content {
   position: relative;
   background-color: #fff;
@@ -61,7 +51,6 @@
   vertical-align: middle;
   padding: 50px;
 }
-
 .uc-modal__close-btn {
   position: absolute;
   top: 10px;
@@ -71,12 +60,10 @@
   padding: 0;
   border: 0;
 }
-
 .uc-modal__close-btn:hover,
 .uc-modal__close-btn:focus {
   opacity: 0.5;
 }
-
 .uc-modal__close-btn::before,
 .uc-modal__close-btn::after {
   content: "";
@@ -88,11 +75,9 @@
   height: 2px;
   background-color: #000;
 }
-
 .uc-modal__close-btn::before {
   transform: translate(-50%) rotate(45deg);
 }
-
 .uc-modal__close-btn::after {
   transform: translate(-50%) rotate(-45deg);
 }
