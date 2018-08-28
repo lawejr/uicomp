@@ -22,7 +22,7 @@ const paths = {
   dist: './build/components/',
   manifest: './manifest/'
 }
-const isDevelopment = !process.env.NODE_ENV || process.env.NODE_ENV == 'development'
+const isDevelopment = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
 
 const componentsList = require('./src/components-list.json')
 const path = require('path')
@@ -80,7 +80,7 @@ gulp.task('templates:dist', function () {
   return gulp.src(paths.src.templates[0], { since: gulp.lastRun('templates:dist') })
   .pipe($.replace(/\n\s*<!--DEMO[\s\S]+?DEMO-->/gm, ''))
   .pipe($.rename(function (path) {
-    path.extname = ".html"
+    path.extname = '.html'
   }))
   .pipe(gulp.dest(paths.dist))
 })
@@ -159,7 +159,7 @@ gulp.task('scripts:demo', function (callback) {
     options.plugins.push(new AssetsPlugin({
       filename: 'scripts.json',
       path: paths.manifest,
-      processOutput(assets) {
+      processOutput (assets) {
         for (let key in assets) {
           let compDir = key.replace('demo-', '') + '/'
 
@@ -248,7 +248,7 @@ gulp.task('build:dist', gulp.series(
   )
 ))
 
-gulp.task('deploy', function() {
+gulp.task('deploy', function () {
   gulp.series('build:dist')
   console.log('========== Публикация содержимого ./build/ на GH-pages')
   return gulp.src(paths.build + '**/*')
